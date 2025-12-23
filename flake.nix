@@ -46,6 +46,20 @@
               })
             ];
 
+            # Patch the JAR to include git.properties with version info
+            postBuild = ''
+              # Create git.properties file with version information
+              mkdir -p git-props
+              cat > git-props/git.properties <<EOF
+              git.tags=v${version}
+              git.commit.id.abbrev=${src.rev}
+              EOF
+
+              # Add git.properties to the JAR
+              ${pkgs.jdk}/bin/jar uf savegame-editor/target/savegame-editor-3.3.0-SNAPSHOT-jar-with-dependencies.jar \
+                -C git-props git.properties
+            '';
+
             installPhase = ''
               runHook preInstall
 
